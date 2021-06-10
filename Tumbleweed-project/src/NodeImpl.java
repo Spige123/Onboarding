@@ -48,7 +48,10 @@ public class NodeImpl implements Node {
     @Override
     public int getProcessedData() {
         if(brokenness)return (int)(java.lang.Math.random()*101);
-        if(ProcessedDataAvailability) return output;
+        if(ProcessedDataAvailability) {
+            availability =true;
+            return output;
+        }
         return -1;
     }
 }
