@@ -12,19 +12,19 @@ public interface Node {
      * states if the node is broken/functional or not
      * @return true if node is broken, false otherwise
      */
-    boolean isBroken();
+    //boolean isBroken();
 
     /**
      * @param rawData the raw data to process
      * @throws Exception exception in case processing fails
      */
-    void process(int rawData) throws Exception;
+    void process(int rawData, int n) throws Exception;
 
     /**
      * checks if the node has finished processing data
      * @return true if information has been processed, false otherwise
      */
-    boolean isProcessedDataAvailable();
+    boolean isProcessedDataAvailable(int n);
 
     /**
      * retrieves the processed data from the node
