@@ -1,6 +1,6 @@
 public interface Node {
 
-    public int funcaaaation (int nodeNummber,int infoToProces){
+    public static int NodeProcessing (int nodeNummber,int infoToProces){
         //check if nodeNumber is available
         // if it is not available then sout(node error)
         //if available then process and return infoProcessed
@@ -8,5 +8,7 @@ public interface Node {
         // does stuff with available nodes
     }
 
-    public shoufleNodes(){}
+    public static int ShoufleNodes(){
+
+    }
 }
