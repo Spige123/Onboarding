@@ -1,10 +1,16 @@
 public interface Database {
 
     /**
-     * sava data in the database
-     * @param data the data to be saved
+     * sava raw data in the database
+     * @param rawData the data to be saved
      */
-    void save(int data);
+    void saveRawData(int rawData);
+
+    /**
+     * save processed data in the database
+     * @param processedData the data to be saved
+     */
+    void saveProcessedData(int processedData);
 
     /**
      * retrieve the next piece of raw data stored in the database
@@ -17,6 +23,24 @@ public interface Database {
      * @return next piece of processed data
      */
     int retrieveProcessedData();
+
+    /**
+     * checks if there is raw data in the database
+     * @return true if there is data, false otherwise
+     */
+    boolean hasRawDataAvailable();
+
+    /**
+     * checks if there is processed data in the database
+     * @return true if there is data, false otherwise
+     */
+    boolean hasProcessedDataAvailable();
+
+    /**
+     * deletes the processed data that has been successfully sent
+     * by the antenna
+     */
+    void removeProcessedData();
 
 
 }
