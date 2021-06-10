@@ -1,12 +1,36 @@
+import java.io.IOException;
+
 public interface Node {
 
-    public int funcaaaation (int nodeNummber,int infoToProces){
-        //check if nodeNumber is available
-        // if it is not available then sout(node error)
-        //if available then process and return infoProcessed
+    /**
+     * states whether the node is available for processing data
+     * @return true if available, false otherwise
+     */
+    boolean isAvailable();
 
-        // does stuff with available nodes
-    }
+    /**
+     * states if the node is broken/functional or not
+     * @return true if node is broken, false otherwise
+     */
+    boolean isBroken();
 
-    public shoufleNodes(){}
+    /**
+     * @param rawData the raw data to process
+     * @throws Exception exception in case processing fails
+     */
+    void process(int rawData) throws Exception;
+
+    /**
+     * checks if the node has finished processing data
+     * @return true if information has been processed, false otherwise
+     */
+    boolean isProcessedDataAvailable();
+
+    /**
+     * retrieves the processed data from the node
+     * @return the processed data
+     */
+    int getProcessedData();
+
+
 }
