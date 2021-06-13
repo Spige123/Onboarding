@@ -5,6 +5,10 @@ public class NodeImpl implements Node {
     private int output;
     private int tickCounter;
 
+    public NodeImpl() {
+        available = true;
+    }
+
 
     /**
      * indicates if the node is available to process new data
@@ -26,7 +30,7 @@ public class NodeImpl implements Node {
             output = testValue;
             tickCounter = 0;
         } else {
-            tickCounter = (int) Math.floor(Math.random() * (6 - 1) + 1); // return random Integer in range [1, 5]ù
+            tickCounter = (int) Math.floor(Math.random() * (6 - 1) + 1); // return random Integer in range [1, 5]
             output = Integer.valueOf(rawData).hashCode();
         }
     }
