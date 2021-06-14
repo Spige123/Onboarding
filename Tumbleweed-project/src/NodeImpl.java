@@ -4,6 +4,7 @@ public class NodeImpl implements Node {
     private final int testValue = -1;
     private int output;
     private int tickCounter;
+    private double failureProbability = 0.01;
 
     public NodeImpl() {
         available = true;
@@ -19,6 +20,10 @@ public class NodeImpl implements Node {
         return available;
     }
 
+
+    // TO DO:
+    // - move failure probability to each and every task, not just when you check with the testValue
+
     /**
      * sends raw data to the node to process
      * @param rawData the raw data to process
@@ -26,8 +31,12 @@ public class NodeImpl implements Node {
     @Override
     public void process(int rawData) {
         available = false;
-        if (rawData == testValue) {
+        if (rawData == testValue && Math.random() >= failureProbability) {
             output = testValue;
+            tickCounter = 0;
+        }
+        if (rawData == testValue && Math.random() < failureProbability) {
+            output = (int) Math.floor(Math.random() * (1001 - 1) + 1); // range [1, 1000]
             tickCounter = 0;
         } else {
             tickCounter = (int) Math.floor(Math.random() * (6 - 1) + 1); // return random Integer in range [1, 5]
