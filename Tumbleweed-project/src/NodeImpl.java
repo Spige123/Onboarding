@@ -5,6 +5,8 @@ public class NodeImpl implements Node {
     private int output;
     private int tickCounter;
     private double failureProbability = 0.01;
+    private boolean brokenness =false;
+
 
     public NodeImpl() {
         available = true;
@@ -30,18 +32,32 @@ public class NodeImpl implements Node {
      */
     @Override
     public void process(int rawData) {
+        // !ER00R! sanity check if we haven't called a non available node
+        if (!available) System.out.println("The node was called while not available");
+        // the node starts work (becomes unavailable)
         available = false;
-        if (rawData == testValue && Math.random() >= failureProbability) {
-            output = testValue;
-            tickCounter = 0;
-        }
-        if (rawData == testValue && Math.random() < failureProbability) {
+        // !ER00R! a broken node was called
+        if (brokenness){
+            System.out.println("A broken node was called");
             output = (int) Math.floor(Math.random() * (1001 - 1) + 1); // range [1, 1000]
             tickCounter = 0;
-        } else {
-            tickCounter = (int) Math.floor(Math.random() * (6 - 1) + 1); // return random Integer in range [1, 5]
-            output = Integer.valueOf(rawData).hashCode();
         }
+        //simulating node behaviour
+        else{
+            if (rawData == testValue ) {
+                //heartbeat signal
+                output = testValue;
+                tickCounter = 0;
+            }
+            else {
+                //How many ticks is the process taking
+                tickCounter = (int) Math.floor(Math.random() * (6 - 1) + 1); // return random Integer in range [1, 5]
+                //output the node will return after #tickCounter ticks
+                output = Integer.valueOf(rawData).hashCode();
+            }
+        }
+        // Simulating node failure
+        if (Math.random() < failureProbability) brokenness=true;
     }
 
     /**
