@@ -1,13 +1,10 @@
-public class Scheduler {
+public class Scheduler implements GlobalData {
 
-    // functional parameters
-    // number of nodes
-    private static final int n = 5;
-    // number of iterations until executions stops
-    private static int cycles = 1000;
+    // number of ticks for the given time interval
+    private static int cycles = hours * 3600 * ticksPerSecond;
 
     // system components
-    private static final Node[] network = new Node[n];
+    private static final Node[] network = new Node[nrOfNodes];
     private static final Database database = new DatabaseImpl();
     private static final DataSource dataSource = new DataSourceImpl();
     private static final Transmission antenna = new TransmissionImpl();
@@ -16,7 +13,7 @@ public class Scheduler {
      * instantiates the network with nodes
      */
     private static void instantiateNetwork() {
-        for (int i = 0; i < n; i++) {
+        for (int i = 0; i < nrOfNodes; i++) {
             network[i] = new NodeImpl();
         }
     }
@@ -29,6 +26,7 @@ public class Scheduler {
             // actual implementation of the scheduler
 
         }
+        System.out.println("done");
     }
 
 
