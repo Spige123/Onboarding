@@ -4,7 +4,7 @@ public interface Transmission {
      * checks if the antenna is available for transmission
      * @return true if antenna is available, false otherwise
      */
-    boolean isAvailable();
+    boolean isAvailable(int time);
 
     /**
      * sends processed data to the antenna for transmission
