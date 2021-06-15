@@ -7,8 +7,9 @@ public class TransmissionImpl implements Transmission{
     //Assuming we have a communications satellite at an altitude h=1000km.
     //The time available for communications timeDay
     // and timeNight is where communications is not available.
-    private int timeDay = 1928;
-    private int timeNight = 6904;
+    private int timeDay = 1928; //seconds
+    private int timeNight = 6904; //seconds
+    //probability that the antenna is pointed towards the sky
     private double communicationProbability = 0.7;
 
 
@@ -17,8 +18,7 @@ public class TransmissionImpl implements Transmission{
         // check if the satellite is visible in the sky
         if (time%(timeNight+timeDay)<timeDay) {
             //a random probability that the antenna will will not be positioned so that it can communicate
-            if (Math.random()< communicationProbability) return true;
-            else return false;
+            return Math.random()< communicationProbability;
         }
         else return false;
     }
