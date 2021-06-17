@@ -65,18 +65,29 @@ public class Scheduler implements GlobalData {
                 // is processed data being received (from the network) ?
                 if (node.isProcessedDataAvailable()) { // yes -> is transmission hardware available?
                     isDataBeingReceived = true;
-                    if (antenna.isAvailable(cycles)) { // yes -> is processed data already available in the database?
-                        if (database.hasProcessedDataAvailable()) { // yes -> retrieve processed data to transmit, store new one in DB
-                            antenna.transmitProcessedData(database.retrieveProcessedData());
-                            database.saveProcessedData(node.getProcessedData());
-                        } else { // no -> send available processed data for transmission + store it in database
-                            int processedData = node.getProcessedData();
-                            antenna.transmitProcessedData(processedData);
-                            database.saveProcessedData(processedData);
-                        }
 
-                    } else { // no -> store processed data in database + delete equivalent raw data
-                        database.saveProcessedData(node.getProcessedData());
+                    // check if the node has been previously verified
+                    if (node.isVerified()) { // yes -> check for broken
+                        if (node.getProcessedData() != testValue) { // broken
+                            System.out.println("node " + network.indexOf(node) + " has broken down");
+                            network.remove(node);
+                        } else { // not broken
+                            node.getProcessedData();
+                        }
+                    } else { // no -> proceed wth normal steps
+                        if (antenna.isAvailable(cycles)) { // yes -> is processed data already available in the database?
+                            if (database.hasProcessedDataAvailable()) { // yes -> retrieve processed data to transmit, store new one in DB
+                                antenna.transmitProcessedData(database.retrieveProcessedData());
+                                database.saveProcessedData(node.getProcessedData());
+                            } else { // no -> send available processed data for transmission + store it in database
+                                int processedData = node.getProcessedData();
+                                antenna.transmitProcessedData(processedData);
+                                database.saveProcessedData(processedData);
+                            }
+
+                        } else { // no -> store processed data in database + delete equivalent raw data
+                            database.saveProcessedData(node.getProcessedData());
+                        }
                     }
                 }
             }

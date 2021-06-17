@@ -1,7 +1,6 @@
-public class NodeImpl implements Node {
+public class NodeImpl implements Node, GlobalData {
 
     private boolean available = true;
-    private final int testValue = -1;
     private int output;
     private int tickCounter;
     private final double failureProbability = 0.01;

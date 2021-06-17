@@ -6,4 +6,6 @@ public interface GlobalData {
 
     public static final int hours = 24;
 
+    public static final int testValue = -1;
+
 }
