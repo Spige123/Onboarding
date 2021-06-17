@@ -26,4 +26,10 @@ public interface Node {
      */
     int getProcessedData();
 
+    /**
+     * checks if the node was previously sent a test value for verification
+     * @return true if yes, false otherwise
+     */
+    boolean isVerified();
+
 }

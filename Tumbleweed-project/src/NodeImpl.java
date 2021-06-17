@@ -6,6 +6,7 @@ public class NodeImpl implements Node {
     private int tickCounter;
     private final double failureProbability = 0.01;
     private boolean broken = false;
+    private boolean verified = false;
 
 
     /**
@@ -36,14 +37,20 @@ public class NodeImpl implements Node {
         // !ER00R! a broken node was called
         if (broken) {
             System.out.println("A broken node was called");
-            return;
         }
 
-        if (rawData == testValue ) {
-            // heartbeat signal
+        if (rawData == testValue && broken) {
+            verified = true;
+            output = 1;
+            tickCounter = 0;
+        }
+        // heartbeat signal
+        if (rawData == testValue && ! broken) {
+            verified = true;
             output = testValue;
             tickCounter = 0;
-        } else {
+        }
+        if (rawData != testValue) {
             // How many ticks is the process taking
             tickCounter = (int) Math.floor(Math.random() * (6 - 1) + 1); // Integer in range [1, 5]
             // output the node will return after #tickCounter ticks
@@ -75,6 +82,16 @@ public class NodeImpl implements Node {
     @Override
     public int getProcessedData() {
         available = true;
+        verified = false;
         return output;
+    }
+
+    /**
+     * checks if the node was previously sent a test value for verification
+     * @return true if yes, false otherwise
+     */
+    @Override
+    public boolean isVerified() {
+        return verified;
     }
 }
