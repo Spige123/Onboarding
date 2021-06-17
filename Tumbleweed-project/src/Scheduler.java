@@ -4,6 +4,8 @@ public class Scheduler implements GlobalData {
 
     // number of ticks for the given time interval
     private static int cycles = hours * 3600 * ticksPerSecond;
+    // next node for checking
+    private static int nextForCheck = 1;
 
     // system components
     private static final ArrayList<Node> network = new ArrayList<Node>();
@@ -24,23 +26,31 @@ public class Scheduler implements GlobalData {
         instantiateNetwork();
         while (cycles > 0) {
             cycles--;
+            System.out.println(cycles);
 
             // is data being received?
             if (dataSource.hasDataAvailable()) { // yes -> receive raw data from the data source
                 boolean isANodeAvailable = false;
                 for (Node node : network) {
                     if (node.isAvailable()) { // is a node in the network available?
-                        // yes -> is raw data already available in the database?
-                        if (database.hasRawDataAvailable()) { // yes -> retrieve old raw data + send to process, store new raw data
-                            node.process(database.retrieveRawData());
-                            database.saveRawData(dataSource.retrieveData());
-                        } else { // no -> send available raw data for processing, store it in the database
-                            int rawData = dataSource.retrieveData();
-                            node.process(rawData);
-                            database.saveRawData(rawData);
+
+                        // see if you can send heartbeat signal to node
+                        if (network.indexOf(node) == nextForCheck % nrOfNodes) { // yes -> send signal
+                            node.process(testValue);
+                            nextForCheck++;
+                        } else { // no -> proceed with normal steps
+
+                            // yes -> is raw data already available in the database?
+                            if (database.hasRawDataAvailable()) { // yes -> retrieve old raw data + send to process, store new raw data
+                                node.process(database.retrieveRawData());
+                                database.saveRawData(dataSource.retrieveData());
+                            } else { // no -> send available raw data for processing, store it in the database
+                                int rawData = dataSource.retrieveData();
+                                node.process(rawData);
+                                database.saveRawData(rawData);
+                            }
+                            isANodeAvailable = true;
                         }
-                        isANodeAvailable = true;
-                        break;
                     }
                 }
 
@@ -69,7 +79,7 @@ public class Scheduler implements GlobalData {
                     // check if the node has been previously verified
                     if (node.isVerified()) { // yes -> check for broken
                         if (node.getProcessedData() != testValue) { // broken
-                            System.out.println("node " + network.indexOf(node) + " has broken down");
+                            System.out.println("node " + node + " has broken down");
                             network.remove(node);
                         } else { // not broken
                             node.getProcessedData();
