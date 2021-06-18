@@ -6,6 +6,8 @@ public class Scheduler implements GlobalData {
     private static int cycles = hours * 3600 * ticksPerSecond;
     // next node for checking
     private static int nextForCheck = 1;
+    // the broken node that should be removed from the network
+    private static Node nodeToRemove;
 
     // system components
     private static final ArrayList<Node> network = new ArrayList<Node>();
@@ -26,7 +28,7 @@ public class Scheduler implements GlobalData {
         instantiateNetwork();
         while (cycles > 0) {
             cycles--;
-            System.out.println(cycles);
+           // System.out.println(cycles);
 
             // is data being received?
             if (dataSource.hasDataAvailable()) { // yes -> receive raw data from the data source
@@ -80,7 +82,7 @@ public class Scheduler implements GlobalData {
                     if (node.isVerified()) { // yes -> check for broken
                         if (node.getProcessedData() != testValue) { // broken
                             System.out.println("node " + node + " has broken down");
-                            network.remove(node);
+                            nodeToRemove = node;
                         } else { // not broken
                             node.getProcessedData();
                         }
@@ -101,6 +103,10 @@ public class Scheduler implements GlobalData {
                     }
                 }
             }
+
+            // remove any broken node detected during this iteration
+            // Note: removes if only still contained in network
+            network.remove(nodeToRemove);
 
             if (! isDataBeingReceived) { // no -> is there processed data in the database?
                 if (database.hasProcessedDataAvailable()) { // yes -> is the antenna available?

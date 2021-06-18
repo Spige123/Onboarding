@@ -31,7 +31,9 @@ public class DatabaseImpl implements Database{
 
     @Override
     public int retrieveRawData() {
-        return rawData.get(indexRawData++);
+        int index = indexRawData;
+        indexRawData++;
+        return rawData.get(index);
     }
 
     @Override
@@ -41,7 +43,7 @@ public class DatabaseImpl implements Database{
 
     @Override
     public boolean hasRawDataAvailable() {
-        return (indexRawData < rawData.size());
+        return (indexRawData < rawData.size() && indexRawData >= 0);
     }
 
     @Override

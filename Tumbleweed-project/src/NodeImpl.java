@@ -35,7 +35,7 @@ public class NodeImpl implements Node, GlobalData {
         available = false;
         // !ER00R! a broken node was called
         if (broken) {
-            System.out.println("A broken node was called");
+            System.out.println("A broken node was called" + this);
         }
 
         if (rawData == testValue && broken) {
