@@ -2,14 +2,23 @@ import java.util.ArrayList;
 
 public class Scheduler implements GlobalData {
 
-    // number of ticks for the given time interval
+    // Variables used in the program
+    // number of ticks (= cycles) as function of #hours and ticks/s rate
     private static int cycles = hours * 3600 * ticksPerSecond;
-    // next node for checking
-    private static int nextForCheck = 1;
-    // the broken node that should be removed from the network
+    // next node to be checked for failure
+    private static int nextForCheck = 0;
+    // detected broken node that is removed from the network
     private static Node nodeToRemove;
 
-    // system components
+    // Variables for statistics
+    // number of corrupted packages (sent for processing to broken nodes)
+    private static int corruptedPackages = 0;
+    // number of packages received as input
+    private static int inputPackages = 0;
+    // number of successfully transmitted packages
+    private static int transmittedPackages = 0;
+
+    // System components
     private static final ArrayList<Node> network = new ArrayList<Node>();
     private static final Database database = new DatabaseImpl();
     private static final DataSource dataSource = new DataSourceImpl();
@@ -24,20 +33,42 @@ public class Scheduler implements GlobalData {
         }
     }
 
+    /**
+     * prints on the console the brokenness status of all nodes in the network
+     */
+    private static void checkBrokenStatus() {
+        for (Node node : network) {
+            node.checkBroken();
+        }
+        System.out.println("--------------------");
+    }
+
+    /**
+     * prints on the console the statistics for the current program run
+     */
+    private static void showStatistics() {
+        System.out.println("Statistics:");
+        System.out.println(inputPackages + " packages received");
+        System.out.println(corruptedPackages + " packages corrupted");
+        System.out.println(transmittedPackages + " packages transmitted");
+    }
+
+
+
     public static void main(String[] args) {
         instantiateNetwork();
         while (cycles > 0) {
             cycles--;
-           // System.out.println(cycles);
 
             // is data being received?
             if (dataSource.hasDataAvailable()) { // yes -> receive raw data from the data source
+                inputPackages++;
                 boolean isANodeAvailable = false;
                 for (Node node : network) {
                     if (node.isAvailable()) { // is a node in the network available?
 
                         // see if you can send heartbeat signal to node
-                        if (network.indexOf(node) == nextForCheck % nrOfNodes) { // yes -> send signal
+                        if (network.indexOf(node) == nextForCheck % network.size()) { // yes -> send signal
                             node.process(testValue);
                             nextForCheck++;
                         } else { // no -> proceed with normal steps
@@ -76,24 +107,26 @@ public class Scheduler implements GlobalData {
             for (Node node : network) {
                 // is processed data being received (from the network) ?
                 if (node.isProcessedDataAvailable()) { // yes -> is transmission hardware available?
-                    isDataBeingReceived = true;
-
                     // check if the node has been previously verified
                     if (node.isVerified()) { // yes -> check for broken
                         if (node.getProcessedData() != testValue) { // broken
                             System.out.println("node " + node + " has broken down");
                             nodeToRemove = node;
+                            corruptedPackages += ((NodeImpl)node).brokennessEfficiency;
                         } else { // not broken
                             node.getProcessedData();
                         }
                     } else { // no -> proceed wth normal steps
+                        isDataBeingReceived = true;
                         if (antenna.isAvailable(cycles)) { // yes -> is processed data already available in the database?
                             if (database.hasProcessedDataAvailable()) { // yes -> retrieve processed data to transmit, store new one in DB
                                 antenna.transmitProcessedData(database.retrieveProcessedData());
+                                transmittedPackages++;
                                 database.saveProcessedData(node.getProcessedData());
                             } else { // no -> send available processed data for transmission + store it in database
                                 int processedData = node.getProcessedData();
                                 antenna.transmitProcessedData(processedData);
+                                transmittedPackages++;
                                 database.saveProcessedData(processedData);
                             }
 
@@ -112,14 +145,16 @@ public class Scheduler implements GlobalData {
                 if (database.hasProcessedDataAvailable()) { // yes -> is the antenna available?
                     if (antenna.isAvailable(cycles)) { // yes -> send processed data from DB to antenna
                         antenna.transmitProcessedData(database.retrieveProcessedData());
+                        transmittedPackages++;
                     }
                     // no -> do nothing
                 }
                 // no -> do nothing (no processed data available anywhere)
             }
 
+            checkBrokenStatus();
         }
-        System.out.println("done");
+        showStatistics();
     }
 
 

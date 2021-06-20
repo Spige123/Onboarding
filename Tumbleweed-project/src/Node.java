@@ -32,4 +32,10 @@ public interface Node {
      */
     boolean isVerified();
 
+    /**
+     * checks if the node is broken
+     * prints yes if broken, no otherwise
+     */
+    void checkBroken();
+
 }

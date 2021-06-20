@@ -3,9 +3,10 @@ public class NodeImpl implements Node, GlobalData {
     private boolean available = true;
     private int output;
     private int tickCounter;
-    private final double failureProbability = 0.01;
+    private final double failureProbability = 0.0003;
     private boolean broken = false;
     private boolean verified = false;
+    public int brokennessEfficiency = 0;
 
 
     /**
@@ -16,10 +17,6 @@ public class NodeImpl implements Node, GlobalData {
     public boolean isAvailable(){
         return available;
     }
-
-
-    // TO DO:
-    // - move failure probability to each and every task, not just when you check with the testValue
 
     /**
      * sends raw data to the node to process
@@ -35,7 +32,8 @@ public class NodeImpl implements Node, GlobalData {
         available = false;
         // !ER00R! a broken node was called
         if (broken) {
-            System.out.println("A broken node was called" + this);
+            System.out.println("A broken node was called " + this);
+            brokennessEfficiency++;
         }
 
         if (rawData == testValue && broken) {
@@ -50,13 +48,14 @@ public class NodeImpl implements Node, GlobalData {
             tickCounter = 0;
         }
         if (rawData != testValue) {
-            // How many ticks is the process taking
+            // #ticks the process takes
             tickCounter = (int) Math.floor(Math.random() * (6 - 1) + 1); // Integer in range [1, 5]
             // output the node will return after #tickCounter ticks
             output = Integer.valueOf(rawData).hashCode();
         }
+
         // Simulating node failure
-        if (Math.random() < failureProbability) {
+        if ((double) Math.random() < failureProbability) {
             broken=true;
         }
     }
@@ -92,5 +91,14 @@ public class NodeImpl implements Node, GlobalData {
     @Override
     public boolean isVerified() {
         return verified;
+    }
+
+    /**
+     * checks if the node is broken
+     * prints yes if broken, no otherwise
+     */
+    @Override
+    public void checkBroken() {
+        System.out.println("node " + this + " is broken - " + this.broken);
     }
 }
